@@ -17,7 +17,7 @@ func TestError_Error(t *testing.T) {
 }
 
 func TestNewError(t *testing.T) {
-	err := rest.NewError(http.StatusBadRequest, "bad request", rest.WithDetails("some details"))
+	err := rest.NewError(http.StatusBadRequest, rest.WithDetails("some details"))
 	assert.NotNil(t, err)
 	assert.Equal(t, http.StatusBadRequest, err.Code)
 	assert.Equal(t, "bad request", err.Message)
@@ -28,7 +28,7 @@ func TestErr(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := context.Background()
 
-	rest.Err(ctx, w, http.StatusNotFound, "not found", rest.WithDetails("could not find resource"))
+	rest.Err(ctx, w, http.StatusNotFound, rest.WithDetails("could not find resource"))
 
 	res := w.Result()
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)

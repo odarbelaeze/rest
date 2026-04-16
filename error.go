@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strings"
 )
 
 // Error represents a structured error response for REST APIs.
@@ -29,10 +30,10 @@ func WithDetails(details string) ErrorOption {
 }
 
 // NewError creates a new Error instance with the provided code, message, and optional configurations.
-func NewError(code int, message string, opts ...ErrorOption) *Error {
+func NewError(code int, opts ...ErrorOption) *Error {
 	err := &Error{
 		Code:    code,
-		Message: message,
+		Message: strings.ToLower(http.StatusText(code)),
 	}
 	for _, opt := range opts {
 		opt(err)
@@ -41,8 +42,8 @@ func NewError(code int, message string, opts ...ErrorOption) *Error {
 }
 
 // Err writes a structured error response to the http.ResponseWriter with the given status code and message.
-func Err(ctx context.Context, w http.ResponseWriter, code int, message string, opts ...ErrorOption) {
-	errorMessage := NewError(code, message, opts...)
+func Err(ctx context.Context, w http.ResponseWriter, code int, opts ...ErrorOption) {
+	errorMessage := NewError(code, opts...)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	content, err := json.Marshal(errorMessage)
